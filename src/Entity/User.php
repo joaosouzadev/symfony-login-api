@@ -45,6 +45,16 @@ class User implements UserInterface
      */
     private $senha;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled = false;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $confirmationToken;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -97,5 +107,25 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         return null;
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): void
+    {
+        $this->enabled = $enabled;
+    }
+
+    public function getConfirmationToken()
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken($confirmationToken): void
+    {
+        $this->confirmationToken = $confirmationToken;
     }
 }

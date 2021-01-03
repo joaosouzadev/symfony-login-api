@@ -4,15 +4,29 @@ security:
         App\Entity\User:
             algorithm: auto
     providers:
-        users_in_memory: { memory: null }
+        database:
+            entity:
+                class: App\Entity\User
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+        api:
+            pattern: ^/api
             anonymous: true
+            stateless: true
             lazy: true
-            provider: users_in_memory
+            json_login:
+                username_path: email
+                password_path: senha
+                check_path: /api/login
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            guard:
+                authenticators:
+                    -  lexik_jwt_authentication.jwt_token_authenticator
+            user_checker: App\Security\UserEnabledChecker
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -24,4 +38,6 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/users, role: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

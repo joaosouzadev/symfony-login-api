@@ -55,6 +55,11 @@ class User implements UserInterface
      */
     private $confirmationToken;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -127,5 +132,22 @@ class User implements UserInterface
     public function setConfirmationToken($confirmationToken): void
     {
         $this->confirmationToken = $confirmationToken;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 }

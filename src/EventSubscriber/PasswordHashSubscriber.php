@@ -37,9 +37,15 @@ class PasswordHashSubscriber implements EventSubscriberInterface {
             return;
         }
 
-//        $user->setCreatedAt(new \DateTime());
+        $user->setCreatedAt(new \DateTime());
         $user->setSenha($this->passwordEncoder->encodePassword($user, $user->getSenha()));
-        $user->setConfirmationToken(bin2hex(random_bytes(30)));
+
+        $token = '';
+        for($i = 0; $i < 6; $i++) {
+            $token .= mt_rand(0, 9);
+        }
+
+        $user->setConfirmationToken($token);
 
         $this->mailer->confirmationEmail($user);
     }

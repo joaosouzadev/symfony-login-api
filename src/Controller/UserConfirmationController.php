@@ -29,15 +29,19 @@ class UserConfirmationController
     {
         $body = json_decode($req->getContent(),true);
 
-        if(!isset($body,$body['confirmationToken'])){
-            throw new ParameterNotFoundException("confirmationToken");
+        if (!isset($body,$body['token'])) {
+            throw new ParameterNotFoundException("token");
+        }
+
+        if (!isset($body,$body['email'])) {
+            throw new ParameterNotFoundException("email");
         }
 
         $user = $this->userRepository->findOneBy(
-            ['confirmationToken' => $body['confirmationToken']]
+            ['email' => $body['email'], 'confirmationToken' => $body['token']]
         );
 
-        if(!$user){
+        if (!$user) {
             throw new NotFoundHttpException('Usuário não encontrado');
         }
 

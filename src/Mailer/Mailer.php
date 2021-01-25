@@ -26,7 +26,6 @@ class Mailer
             ->from('testedevlaravel@gmail.com')
             ->to($user->getEmail())
             ->subject('Bem vindo!')
-            ->text('Bem vindo!')
             ->html($body);
 
         $this->mailer->send($email);

@@ -40,4 +40,5 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/users, role: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: /api, role: IS_AUTHENTICATED_ANONYMOUSLY, methods: [ GET ] }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

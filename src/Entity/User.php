@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -15,7 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     itemOperations={"get"},
  *     collectionOperations={"post"},
  *     normalizationContext={
- *          "groups"={"read"}
+ *          "groups"={"user:get"}
  *     }
  * )
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -27,13 +29,13 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"read"})
+     * @Groups({"get"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"read"})
+     * @Groups({"get"})
      * @Assert\NotBlank()
      * @Assert\Email()
      */
@@ -56,9 +58,36 @@ class User implements UserInterface
     private $confirmationToken;
 
     /**
+     * @ORM\Column(type="json")
+     */
+    private $roles = [];
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Instituicao[]
+     *
+     * @ORM\ManyToMany(targetEntity="Instituicao", inversedBy="usuarios")
+     * @ORM\JoinTable(
+     *  name="user_instituicao",
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="instituicao_id", referencedColumnName="id")
+     *  }
+     * )
+     * @ORM\OrderBy({"razaoSocial" = "ASC"})
+     */
+    protected $instituicoes;
+
+    public function __construct()
+    {
+        $this->instituicoes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -91,7 +120,17 @@ class User implements UserInterface
 
     public function getRoles()
     {
-        return ['ROLE_USER'];
+        $roles = $this->roles;
+        if (!in_array('ROLE_USER', $roles)) {
+            $roles[] = 'ROLE_USER';
+        }
+
+        return $roles;
+    }
+
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
     }
 
     public function getPassword()
@@ -147,6 +186,46 @@ class User implements UserInterface
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Instituicao[]
+     */
+    public function getInstituicoes(): Collection
+    {
+        return $this->instituicoes;
+    }
+
+    public function addInstituicao(Instituicao $instituicao): self
+    {
+        if (!$this->instituicoes->contains($instituicao)) {
+            $this->instituicoes[] = $instituicao;
+        }
+
+        return $this;
+    }
+
+    public function removeInstituicao(Instituicao $instituicao): self
+    {
+        $this->instituicoes->removeElement($instituicao);
+
+        return $this;
+    }
+
+    public function addInstituico(Instituicao $instituico): self
+    {
+        if (!$this->instituicoes->contains($instituico)) {
+            $this->instituicoes[] = $instituico;
+        }
+
+        return $this;
+    }
+
+    public function removeInstituico(Instituicao $instituico): self
+    {
+        $this->instituicoes->removeElement($instituico);
 
         return $this;
     }

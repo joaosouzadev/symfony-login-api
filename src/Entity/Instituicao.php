@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\InstituicaoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
@@ -34,12 +36,24 @@ class Instituicao
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"instituicao:get"})
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
+     * @ORM\Column(type="string")
+     * @Groups({"instituicao:get", "instituicao:post"})
+     * @ApiProperty(identifier=true)
+     */
+    private $uuid;
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"instituicao:get", "instituicao:post"})
+     * @Assert\Length(
+     *     min = 14,
+     *     max = 14
+     * )
      */
     private $cnpj;
 
@@ -381,6 +395,18 @@ class Instituicao
                 $colaboradore->setInstituicao(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): self
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

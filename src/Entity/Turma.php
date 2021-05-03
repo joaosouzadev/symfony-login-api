@@ -22,37 +22,38 @@ class Turma
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"turma:get"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Instituicao", inversedBy="turmas")
      * @ORM\JoinColumn()
-     * @Groups({"instituicao:get"})
+     * @Groups({"turma:post"})
      */
     private $instituicao;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Curso", inversedBy="turmas")
      * @ORM\JoinColumn()
-     * @Groups({"curso:get"})
+     * @Groups({"turma:get", "turma:post"})
      */
     private $curso;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string")
      * @Groups({"turma:get", "turma:post"})
      */
     private $nome;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", nullable=true)
      * @Groups({"turma:get", "turma:post"})
      */
     private $horaInicio;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", nullable=true)
      * @Groups({"turma:get", "turma:post"})
      */
     private $horaFim;
@@ -96,30 +97,6 @@ class Turma
         return $this;
     }
 
-    public function getHoraInicio(): ?string
-    {
-        return $this->horaInicio;
-    }
-
-    public function setHoraInicio(string $horaInicio): self
-    {
-        $this->horaInicio = $horaInicio;
-
-        return $this;
-    }
-
-    public function getHoraFim(): ?string
-    {
-        return $this->horaFim;
-    }
-
-    public function setHoraFim(string $horaFim): self
-    {
-        $this->horaFim = $horaFim;
-
-        return $this;
-    }
-
     /**
      * @return Collection|TurmaIntervalo[]
      */
@@ -158,6 +135,30 @@ class Turma
     public function setInstituicao(?Instituicao $instituicao): self
     {
         $this->instituicao = $instituicao;
+
+        return $this;
+    }
+
+    public function getHoraInicio(): ?string
+    {
+        return $this->horaInicio;
+    }
+
+    public function setHoraInicio(?string $horaInicio): self
+    {
+        $this->horaInicio = $horaInicio;
+
+        return $this;
+    }
+
+    public function getHoraFim(): ?string
+    {
+        return $this->horaFim;
+    }
+
+    public function setHoraFim(?string $horaFim): self
+    {
+        $this->horaFim = $horaFim;
 
         return $this;
     }

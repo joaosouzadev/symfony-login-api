@@ -2,19 +2,24 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CursoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"curso:get"}},
- *     denormalizationContext={"groups"={"curso:post"}}
+ *     normalizationContext={"groups"={"curso:get", "segmento:get", "instituicao:get", "turma:get"}, "enable_max_depth"=true},
+ *     denormalizationContext={"groups"={"curso:post", "turma:post"}}
  * )
  * @ORM\Entity(repositoryClass=CursoRepository::class)
+ * @ApiFilter(SearchFilter::class, properties={"instituicao.uuid": "exact", "nome": "exact"})
  */
 class Curso
 {
@@ -22,20 +27,29 @@ class Curso
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"curso:get"})
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
+     * @ORM\Column(type="string")
+     * @Groups({"curso:get", "curso:post"})
+     * @ApiProperty(identifier=true)
+     */
+    private $uuid;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Instituicao", inversedBy="cursos")
      * @ORM\JoinColumn()
-     * @Groups({"instituicao:get"})
+     * @Groups({"curso:get", "curso:post"})
      */
     private $instituicao;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Segmento", inversedBy="cursos")
      * @ORM\JoinColumn()
-     * @Groups({"segmento:get"})
+     * @Groups({"curso:get", "curso:post"})
      */
     private $segmento;
 
@@ -46,7 +60,9 @@ class Curso
     private $nome;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Turma", mappedBy="curso")
+     * @ORM\OneToMany(targetEntity="App\Entity\Turma", mappedBy="curso", cascade={"persist"})
+     * @Groups({"curso:get", "curso:post", "turma:post"})
+     * @MaxDepth(1)
      */
     private $turmas;
 
@@ -122,6 +138,18 @@ class Curso
     public function setSegmento(?Segmento $segmento): self
     {
         $this->segmento = $segmento;
+
+        return $this;
+    }
+
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): self
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

@@ -16,9 +16,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ApiResource(
  *     itemOperations={"get"},
  *     collectionOperations={"post"},
- *     normalizationContext={
- *          "groups"={"user:get"}
- *     }
+ *     normalizationContext={"groups"={"user:get"}},
+ *     denormalizationContext={"groups"={"user:post"}}
  * )
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity("email")
@@ -29,13 +28,13 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"get"})
+     * @Groups({"user:get"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get"})
+     * @Groups({"user:get"})
      * @Assert\NotBlank()
      * @Assert\Email()
      */
@@ -59,11 +58,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
+     * @Groups({"user:post"})
      */
     private $roles = [];
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"user:get"})
      */
     private $createdAt;
 

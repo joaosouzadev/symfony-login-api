@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Uid\Uuid;
 
 class InstituicaoSubscriber implements EventSubscriberInterface
 {
@@ -50,6 +51,9 @@ class InstituicaoSubscriber implements EventSubscriberInterface
         if (Request::METHOD_POST === $method) {
             // usuario
             $user->addInstituicao($instituicao);
+
+            // instituicao
+            $instituicao->setUuid(Uuid::v4());
 
             // empresa
             $cnpj = $instituicao->getCnpj();
